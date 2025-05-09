@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineHome, AiOutlineHeart } from 'react-icons/ai';
-import { BsBox, BsPerson } from 'react-icons/bs';
+import { BsBox, BsPerson, BsShop } from 'react-icons/bs';
 import { FaCarrot } from 'react-icons/fa';
 import { IoInformationCircleOutline } from 'react-icons/io5';
+import { useAuth } from '../context/AuthCOntext'; 
 
 const Navbar = () => {
+  const { user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
@@ -39,6 +41,27 @@ const Navbar = () => {
             <NavLink to="/products" icon={<BsBox />} text="Products" />
             <NavLink to="/farmers" icon={<FaCarrot />} text="Farmers" />
             <NavLink to="/about" icon={<IoInformationCircleOutline />} text="About" />
+            {user?(
+              <>
+               {user.role === 'seller' ? (
+                        <li>
+                            <a href="/admin-dashboard" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Admin Dashboard</a>
+                        </li>
+                    ) : (
+                        <li>
+                            <a href="/become-seller" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Become a Seller</a>
+                        </li>
+                    )}
+              </>
+            ):(
+               // If user is not logged in
+               <li>
+                
+                <a href="/login" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Login</a>
+           </li>
+       )}
+            
+
           </div>
 
           {/* Right Side Icons */}

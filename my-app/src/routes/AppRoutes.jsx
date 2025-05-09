@@ -1,20 +1,28 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
-import Products from '../pages/Products';
-import Farmers from '../pages/farmers';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import BecomeSeller from '../pages/BecomeSeller';
+import Dashboard from '../components/Dashboard';
+import PrivateRoute from '../components/PrivateRoute';
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/farmers" element={<Farmers />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="/become-seller" element={<BecomeSeller />} />
+      <Route 
+        path="/admin-dashboard" 
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } 
+      />
+      {/* Add more dashboard routes here later */}
     </Routes>
   );
 };

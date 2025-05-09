@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../api/axiosInstance';
+import { useAuth } from '../context/AuthCOntext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const { login } = useAuth();
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
 
   const handleChange = (e) => {
     setFormData({
