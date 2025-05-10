@@ -100,10 +100,40 @@ const login = asyncHandler(async (req, res) => {
 
 const registerSeller = asyncHandler(async (req, res) => {
     try {
-        const { email, password, businessName, description, phone, address } = req.body;
+        const { 
+            email, 
+            username, 
+            description, 
+            categories, 
+            password 
+        } = req.body;
 
-        if (!email || !password || !businessName) {
-            throw new ApiError(400, "Required fields missing");
+        // Validate required fields
+        if (!email || !username || !description || !categories || !password) {
+            throw new ApiError(400, "All fields are required");
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            throw new ApiError(400, "Invalid email format");
+        }
+
+        // Validate username length
+        if (username.length < 3) {
+            throw new ApiError(400, "Username must be at least 3 characters long");
+        }
+
+        // Validate description length (minimum 5 words)
+        if (description.split(' ').length < 5) {
+            throw new ApiError(400, "Description must be at least one complete sentence");
+        }
+
+        // Validate categories
+        const validCategories = ['Vegetables', 'Pulses', 'Rice', 'Wheat', 'Jowar'];
+        const isValidCategories = categories.every(cat => validCategories.includes(cat));
+        if (!isValidCategories) {
+            throw new ApiError(400, "Invalid categories selected");
         }
 
         // Check if user already exists
@@ -121,11 +151,13 @@ const registerSeller = asyncHandler(async (req, res) => {
             email,
             password: hashedPassword,
             role: 'seller',
+            isSeller: true,
             sellerProfile: {
-                businessName,
+                username,
                 description,
-                address,
-                phone
+                categories,
+                verified: false,
+                createdAt: new Date()
             }
         });
 
@@ -150,8 +182,67 @@ const registerSeller = asyncHandler(async (req, res) => {
     }
 });
 
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user profile" });
+  }
+});
+
+      
+
+const loginSeller = asyncHandler(async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Find the user
+        const user = await User.findOne({ email });
+        if (!user || !user.isSeller) {
+            return res.status(401).json({
+                message: "Invalid credentials or not a seller account"
+            });
+        }
+
+        // Verify password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+
+        // Generate token
+        const accessToken = generateAccessToken(user._id);
+
+        // Send response
+        return res.status(200).json({
+            success: true,
+            data: {
+                user: {
+                    _id: user._id,
+                    email: user.email,
+                    isSeller: user.isSeller,
+                    sellerProfile: user.sellerProfile
+                },
+                accessToken
+            },
+            message: "Login successful"
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({
+            message: "Something went wrong during login"
+        });
+    }
+});
+
 export {
     register,
     login,
-    registerSeller
+    registerSeller,
+     getUserProfile,
+      loginSeller
 };

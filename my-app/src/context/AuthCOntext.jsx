@@ -1,48 +1,42 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        // Check if user data exists in localStorage on initial load
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
-        if (token && userData) {
-            setUser(JSON.parse(userData));
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Fetch user data from your backend
+      fetchUserData(token);
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-        setLoading(false);
-    }, []);
-
-    const login = (userData, token) => {
-        setUser(userData);
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
-    };
-
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-    };
-
-    if (loading) {
-        return null; // or a loading spinner
+      });
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
-        {children}
+  return (
+    <AuthContext.Provider value={{ user, setUser, isLoading }}>
+      {children}
     </AuthContext.Provider>
-    );
+  );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+export const useAuth = () => useContext(AuthContext);

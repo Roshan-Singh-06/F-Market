@@ -4,19 +4,49 @@ import { AiOutlineHome, AiOutlineHeart } from 'react-icons/ai';
 import { BsBox, BsPerson, BsShop } from 'react-icons/bs';
 import { FaCarrot } from 'react-icons/fa';
 import { IoInformationCircleOutline } from 'react-icons/io5';
-import { useAuth } from '../context/AuthCOntext'; 
+import { useAuth } from '../context/AuthContext'; 
 
 const Navbar = () => {
-  const { user } = useAuth();
+ const { user, setUser } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  
 
+  const fetchUserData = async (token) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const userData = await response.json();
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
   useEffect(() => {
-    // Check if user is logged in by looking for token
+     // Check if user is logged in and fetch user data
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
+    if (token) {
+      setIsLoggedIn(true);
+      // Fetch user data from backend
+      fetchUserData(token);
+    }
+  },[]);
+   const handleDashboardClick = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/seller-login');
+    } else {
+      navigate('/seller-login');
+    }
+  };
+
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -36,30 +66,22 @@ const Navbar = () => {
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
-            <NavLink to="/" icon={<AiOutlineHome />} text="Home" />
+          <div className="hidden md:flex items-center space-x-8">            <NavLink to="/" icon={<AiOutlineHome />} text="Home" />
             <NavLink to="/products" icon={<BsBox />} text="Products" />
             <NavLink to="/farmers" icon={<FaCarrot />} text="Farmers" />
             <NavLink to="/about" icon={<IoInformationCircleOutline />} text="About" />
-            {user?(
-              <>
-               {user.role === 'seller' ? (
-                        <li>
-                            <a href="/admin-dashboard" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Admin Dashboard</a>
-                        </li>
-                    ) : (
-                        <li>
-                            <a href="/become-seller" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Become a Seller</a>
-                        </li>
-                    )}
-              </>
-            ):(
-               // If user is not logged in
-               <li>
-                
-                <a href="/login" className="text-[#FFFDD0] hover:text-[#FFF8DC]">Login</a>
-           </li>
-       )}
+             {user?.isSeller ? (
+          <button 
+            onClick={handleDashboardClick}
+            className="text-[#FFFDD0] hover:text-[#FFF8DC] transition-colors"
+          >
+            Admin Dashboard
+          </button>
+        ) : (
+          <Link to="/become-seller" className="text-[#FFFDD0] hover:text-[#FFF8DC] transition-colors">
+            Become a Seller
+          </Link>
+        )}
             
 
           </div>

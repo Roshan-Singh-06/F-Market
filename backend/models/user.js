@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin', 'seller'],
+        enum: ['user', 'seller','admin'],
         default: 'user'
     },
     isSeller: {
@@ -22,10 +22,26 @@ const userSchema = new mongoose.Schema({
         default: false
     },
     sellerProfile: {
-        businessName: String,
-        description: String,
-        address: String,
-        phone: String
+        username: {
+            type: String,
+            minLength: 3
+        },
+        description: {
+            type: String,
+            minLength: 20 // To ensure at least one proper sentence
+        },
+        categories: [{
+            type: String,
+            enum: ['Vegetables', 'Pulses', 'Rice', 'Wheat', 'Jowar']
+        }],
+        verified: {
+            type: Boolean,
+            default: false
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
     }
 }, {
     timestamps: true

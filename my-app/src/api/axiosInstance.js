@@ -53,4 +53,16 @@ export const apiService = {
     }
 };
 
+const API_URL = 'http://localhost:5000/api';
+
+
+export const registerSeller = async (sellerData) => {
+  try {
+    const response = await axios.post(`${API_URL}/users/register-seller`, sellerData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export default api;
