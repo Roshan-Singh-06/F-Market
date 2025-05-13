@@ -23,6 +23,10 @@ export const AuthProvider = ({ children }) => {
           'Authorization': `Bearer ${token}`
         }
       });
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server did not return JSON. Response may be HTML error page.');
+      }
       const data = await response.json();
       setUser(data);
     } catch (error) {

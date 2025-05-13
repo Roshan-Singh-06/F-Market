@@ -1,6 +1,5 @@
 import express from 'express';
-import multer from 'multer';
-import path from 'path';
+import upload from '../middleware/multer.js';
 import {
   createProduct,
   getProducts,
@@ -12,22 +11,12 @@ import { verifyJWT } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Ensure 'uploads/' directory exists
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-const upload = multer({ storage });
-
 // Routes
-router.post('/', verifyJWT, upload.array('images'), createProduct);
-router.get('/', getProducts);
-router.get('/:id', getProductById);
-router.put('/:id', verifyJWT, upload.array('images'), updateProduct);
-router.delete('/:id', verifyJWT, deleteProduct);
+router.post('/', verifyJWT, upload.array('images'), createProduct);  // Create product with images
+router.get('/', getProducts);  // Get all products
+router.get('/:id', getProductById);  // Get a product by ID
+router.put('/:id', verifyJWT, upload.array('images'), updateProduct);  // Update product with images
+router.delete('/:id', verifyJWT, deleteProduct);  // Delete product by ID
 
 export default router;
+

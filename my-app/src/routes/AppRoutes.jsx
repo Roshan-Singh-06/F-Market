@@ -9,6 +9,7 @@ import Dashboard from '../components/Dashboard';
 import PrivateRoute from '../components/PrivateRoute';
 import SellerLogin from '../components/SellerLogin';
 import AddProduct from '../components/AddProduct';
+import Products from '../pages/products';
 
 const AppRoutes = () => {
   return (
@@ -18,21 +19,20 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/become-seller" element={<BecomeSeller />} />
       <Route path="/seller-login" element={<SellerLogin />} />
-         <Route path="/dashboard" element={<Dashboard />} />
-      
-              <Route path="/seller-registration" element={<FarmSellerOnboarding />} />
-               <Route 
-          path="/dashboard" 
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          } 
-        />
-           <Route 
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/seller-registration" element={<FarmSellerOnboarding />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
         path="/dashboard/add-product" 
         element={
-         <AddProduct/>
+          <AddProduct/>
         } 
       />
       <Route 
@@ -43,6 +43,8 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
+      <Route path="/dashboard/products" element={<Products />} />
+      <Route path="/products" element={<Products />} />
       {/* Add more dashboard routes here later */}
     </Routes>
   );

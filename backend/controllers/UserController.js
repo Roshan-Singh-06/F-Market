@@ -239,10 +239,19 @@ const loginSeller = asyncHandler(async (req, res) => {
     }
 });
 
+export const getActiveUserCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching active user count' });
+  }
+};
+
 export {
     register,
     login,
     registerSeller,
-     getUserProfile,
-      loginSeller
+    getUserProfile,
+    loginSeller
 };

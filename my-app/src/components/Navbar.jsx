@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AiOutlineHome, AiOutlineHeart } from 'react-icons/ai';
 import { BsBox, BsPerson, BsShop } from 'react-icons/bs';
 import { FaCarrot } from 'react-icons/fa';
@@ -11,6 +11,7 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   
 
   const fetchUserData = async (token) => {
@@ -37,6 +38,12 @@ const Navbar = () => {
       fetchUserData(token);
     }
   },[]);
+
+  // Close dropdown when route changes
+  useEffect(() => {
+    setShowDropdown(false);
+  }, [location.pathname]);
+
    const handleDashboardClick = () => {
     const token = localStorage.getItem('token');
     if (!token) {

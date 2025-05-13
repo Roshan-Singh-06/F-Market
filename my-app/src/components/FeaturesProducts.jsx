@@ -1,32 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { apiService } from '../api/axiosInstance';
 
 const FeaturedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Organic Tomatoes",
-      price: "$4.99/lb",
-      brand: "Green Valley Farm",
-      description: "Fresh, locally grown organic tomatoes picked at peak ripeness",
-      image: "https://source.unsplash.com/400x300/?tomatoes"
-    },
-    {
-      id: 2,
-      name: "Farm Fresh Eggs",
-      price: "$6.99/dozen",
-      brand: "Happy Hens Farm",
-      description: "Free-range eggs from pasture-raised chickens",
-      image: "https://source.unsplash.com/400x300/?eggs"
-    },
-    {
-      id: 3,
-      name: "Organic Spinach",
-      price: "$3.99/bunch",
-      brand: "Pure Greens",
-      description: "Nutrient-rich organic spinach leaves, freshly harvested",
-      image: "https://source.unsplash.com/400x300/?spinach"
-    }
-  ];
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await apiService.get('/products');
+        // Show only the first 5 products as featured
+        setProducts(res.data.slice(0, 5));
+      } catch (err) {
+        setProducts([]);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <section className="py-10 px-4 md:px-16 bg-[#fdf6ee]">
@@ -37,9 +26,9 @@ const FeaturedProducts = () => {
 
       <div className="flex overflow-x-auto gap-6 pb-4 snap-x snap-mandatory scrollbar-hide">
         {products.map((product) => (
-          <div key={product.id} className="bg-white shadow-md rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl duration-300 min-w-[280px]">
+          <div key={product._id} className="bg-white shadow-md rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl duration-300 min-w-[280px]">
             <img
-              src={product.image}
+              src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.image}
               alt={product.name}
               className="w-full h-48 object-cover"
             />
@@ -48,14 +37,14 @@ const FeaturedProducts = () => {
                 <h2 className="text-xl font-semibold text-[#5b2c06]">
                   {product.name}
                 </h2>
-                <span className="text-sm text-[#5b2c06]">{product.price}</span>
+                <span className="text-sm text-[#5b2c06]">₹{product.price}/{product.unit || 'kg'}</span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">{product.brand}</p>
+              <p className="text-sm text-gray-600 mt-1">{product.category}</p>
               <p className="text-sm text-gray-500 mt-2 line-clamp-2">
                 {product.description}
               </p>
               <div className="flex justify-between items-center mt-4">
-                <span className="text-green-600 text-sm">In Stock</span>
+                <span className="text-green-600 text-sm">In Stock: {product.stock}</span>
                 <button className="bg-[#823e17] text-white px-4 py-2 rounded-md text-sm hover:bg-[#692f0f]">
                   Add to Cart
                 </button>

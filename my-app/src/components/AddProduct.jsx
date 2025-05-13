@@ -6,7 +6,7 @@ const AddProduct = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
+    pricePerKg: '', // Updated field name for backend compatibility
     stock: '',
     description: '',
     category: '',
@@ -25,6 +25,8 @@ const AddProduct = () => {
         formData.images.forEach(image => {
           formDataToSend.append('images', image);
         });
+      } else if (key === 'pricePerKg') {
+        formDataToSend.append('price', formData[key]); // Map pricePerKg to price for backend
       } else {
         formDataToSend.append(key, formData[key]);
       }
@@ -78,11 +80,11 @@ const AddProduct = () => {
               <input
                 type="number"
                 min="0"
-                 step="0.01"
+                step="0.01"
                 value={formData.pricePerKg}
                 onChange={(e) => setFormData({...formData, pricePerKg: e.target.value})}
                 className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B5E3C]"
-                 placeholder="0.00"
+                placeholder="0.00"
                 required
               />
             </div>
