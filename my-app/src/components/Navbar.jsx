@@ -4,7 +4,7 @@ import { AiOutlineHome, AiOutlineHeart } from 'react-icons/ai';
 import { BsBox, BsPerson, BsShop } from 'react-icons/bs';
 import { FaCarrot } from 'react-icons/fa';
 import { IoInformationCircleOutline } from 'react-icons/io5';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from './context/AuthContext'; 
 
 const Navbar = () => {
  const { user, setUser } = useAuth();
