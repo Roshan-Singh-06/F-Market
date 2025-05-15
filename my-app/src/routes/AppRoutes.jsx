@@ -10,6 +10,7 @@ import PrivateRoute from '../components/PrivateRoute';
 import SellerLogin from '../components/SellerLogin';
 import AddProduct from '../components/AddProduct';
 import Products from '../pages/products';
+import FarmerInfoPage from './components/FarmerInfoPage';
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
       <Route path="/seller-login" element={<SellerLogin />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/seller-registration" element={<FarmSellerOnboarding />} />
+      <Route path="/farmer-info" element={<FarmerInfoPage />} />
       <Route 
         path="/dashboard" 
         element={
