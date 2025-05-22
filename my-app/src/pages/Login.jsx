@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../api/axiosInstance';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -31,6 +31,7 @@ const Login = () => {
       
       // Store token in localStorage
       localStorage.setItem('token', response.data.data.accessToken);
+      setUser(response.data.data.user); // Set user in context
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

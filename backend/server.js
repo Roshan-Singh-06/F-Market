@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
+import farmerRoutes from './routes/farmerRoutes.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +30,8 @@ connectDB();
 // Routes
 app.use('/api/users', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/farmers', farmerRoutes);
+app.use('/uploads', express.static('uploads')); 
 
 // Error handling middleware
 app.use((err, req, res, next) => {

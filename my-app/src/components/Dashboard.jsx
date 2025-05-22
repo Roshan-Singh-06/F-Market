@@ -71,7 +71,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card icon={<ShoppingCart />} title="Orders" onClick={() => navigate('/dashboard/orders')} />
-        <Card icon={<Package />} title="My Products" onClick={() => navigate('/dashboard/products')} />
+        <Card icon={<Package />} title="My Profile" onClick={() => navigate('/farmer-profile')} />
         <Card icon={<BarChart />} title="Analytics" onClick={() => navigate('/dashboard/analytics')} />
       </div>
     </div>

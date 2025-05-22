@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCarrot } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -10,9 +10,17 @@ const SellerLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { setUser, user } = useAuth();
+
+  // Add useEffect to navigate after user is set
+  useEffect(() => {
+    if (user && user.isSeller) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e) => {
-       e.preventDefault();
+    e.preventDefault();
     setError('');
     setIsLoading(true);
 
@@ -23,27 +31,26 @@ const SellerLogin = () => {
       });
       console.log('Login response:', response.data); // Debug log
 
+      if (response.data && response.data.data) {  // Changed from response.data.user
+        const { user, accessToken } = response.data.data;  // Extract from data property
 
-
-          if (response.data && response.data.data) {  // Changed from response.data.user
-      const { user, accessToken } = response.data.data;  // Extract from data property
-      
-      if (user.isSeller) {
-        localStorage.setItem('token', accessToken);
-        setUser(user);
-        navigate('/dashboard');
+        if (user.isSeller) {
+          localStorage.setItem('token', accessToken);
+          setUser(user); // navigation will happen in useEffect
+        } else {
+          setError('Access denied. Only sellers can login here.');
+        }
       } else {
-        setError('Access denied. Only sellers can login here.');
+        setError('Invalid response from server');
       }
-    } else {
-      setError('Invalid response from server');
+    } catch (err) {
+      console.error('Login error:', err); // Debug log
+      setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error('Login error:', err); // Debug log
-    setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }};
+  };
+
   return (
     <div className="min-h-screen bg-[#FFF5E1] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8">

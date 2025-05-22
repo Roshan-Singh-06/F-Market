@@ -64,4 +64,26 @@ export const registerSeller = async (sellerData) => {
   }
 };
 
+// Fetch all farmers from backend
+export const fetchAllFarmers = async () => {
+  try {
+    const response = await api.get('/farmers/all');
+    return response.data.farmers;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Create or update farmer profile
+export const saveFarmerProfile = async (profileData) => {
+  try {
+    const response = await api.post('/farmers/profile', profileData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data.profile;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export default api;

@@ -4,7 +4,7 @@ import { AiOutlineHome, AiOutlineHeart } from 'react-icons/ai';
 import { BsBox, BsPerson, BsShop } from 'react-icons/bs';
 import { FaCarrot } from 'react-icons/fa';
 import { IoInformationCircleOutline } from 'react-icons/io5';
-import { useAuth } from './context/AuthContext'; 
+import { useAuth } from '../context/AuthContext'; 
 
 const Navbar = () => {
  const { user, setUser } = useAuth();
@@ -36,8 +36,11 @@ const Navbar = () => {
       setIsLoggedIn(true);
       // Fetch user data from backend
       fetchUserData(token);
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
     }
-  },[]);
+  },[location.pathname]);
 
   // Close dropdown when route changes
   useEffect(() => {
@@ -61,6 +64,25 @@ const Navbar = () => {
     setShowDropdown(false);
     navigate('/login');
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      const dropdown = document.getElementById('profile-dropdown');
+      const button = document.getElementById('profile-dropdown-btn');
+      if (dropdown && !dropdown.contains(event.target) && button && !button.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   return (
     <nav className="bg-[#5C4033] shadow-md">
@@ -100,14 +122,14 @@ const Navbar = () => {
             </Link>
             <div className="relative">
               <button 
+                id="profile-dropdown-btn"
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="text-[#FFFDD0] hover:text-[#FFF8DC] focus:outline-none"
               >
                 <BsPerson className="text-2xl" />
               </button>
-              
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                <div id="profile-dropdown" className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                   {isLoggedIn ? (
                     <>
                       <Link

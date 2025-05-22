@@ -1,25 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const farmers = [
-  {
-    name: 'Ravi Kumar',
-    description: 'Expert in growing organic vegetables and fruits in sustainable ways.',
-    image: 'https://source.unsplash.com/300x200/?farmer,india',
-  },
-  {
-    name: 'Sunita Rane',
-    description: 'Leading a cooperative of women farmers in Maharashtra.',
-    image: 'https://source.unsplash.com/300x200/?woman,farming',
-  },
-  {
-    name: 'Mohammed Ameen',
-    description: 'Specializes in cultivating pulses and wheat with traditional techniques.',
-    image: 'https://source.unsplash.com/300x200/?indian,farm',
-  },
-];
+import axios from 'axios';
 
 const OurFarmers = () => {
+  const [farmers, setFarmers] = useState([]);
+
+  useEffect(() => {
+    const fetchFarmers = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/farmers/all');
+        setFarmers(res.data.farmers.slice(0, 3)); // Show top 3 farmers
+      } catch (err) {
+        setFarmers([]);
+      }
+    };
+    fetchFarmers();
+  }, []);
+
   return (
     <section className="bg-[#fef9f4] py-16 px-6 md:px-20 text-[#4b2e1e]">
       <div className="text-center mb-12">
@@ -29,9 +26,9 @@ const OurFarmers = () => {
 
       <div className="grid md:grid-cols-3 gap-8">
         {farmers.map((farmer, idx) => (
-          <div key={idx} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow">
+          <div key={farmer._id || idx} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow">
             <img
-              src={farmer.image}
+              src={farmer.imageUrl ? `http://localhost:5000${farmer.imageUrl}` : '/default-farmer.jpg'}
               alt={farmer.name}
               className="w-full h-48 object-cover rounded-t-xl"
             />
